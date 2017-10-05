@@ -113,7 +113,7 @@ class Helpdesk extends Component {
                         )}
                         <Table striped hover>
                             <thead>
-                            <tr>
+                            <tr >
                                 <th>ID</th>
                                 <th>User</th>
                                 <th>OS</th>
