@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { apiurl } from '../../helpers/constants';
 
 // Components
 import { Jumbotron, Button, Col } from 'react-bootstrap';
@@ -10,14 +11,14 @@ class HelpdeskModal extends Component {
             ticket: props.selectedTicket,
             techUsers: props.techUsers,
             closeDialogClick: props.closeDialogClick,
-            tech: null,
+            techID: null,
             priority: null,
             escalation: null
         }
     }
 
     handleTechChange = (e) => {
-        this.setState({ tech: e.target.value });
+        this.setState({ techID: e.target.value });
     }
 
     handlePriorityChange = (e) => {
@@ -32,14 +33,25 @@ class HelpdeskModal extends Component {
     assignTicketToTech = (e) => {
         e.preventDefault();
 
-        const { tech, priority, escalation } = this.state;
-        if(tech === null || priority === null || escalation === null) {
+        const { techID, priority, escalation } = this.state;
+        if(techID === null || priority === null || escalation === null) {
             return;
 
         }
 
-        // TODO: Interact with our API
-        alert('TODO: Tech successfully assigned to ticket!');
+        const options = {
+            method: 'post',
+            body: JSON.stringify({
+                techUserID: techID,
+                ticketID: this.state.ticket.id,
+                priority,
+                escalationLevel: escalation
+            })
+        };
+        // Create tech ticket handler
+        fetch(`${apiurl}/api/techUser/assignToTicket`, options)
+
+        alert('Tech successfully assigned to ticket!');
         window.location.reload();
     }
 
