@@ -1,38 +1,42 @@
 import React, { Component } from 'react';
 import { apiurl } from "../../helpers/constants";
-import firebase from 'firebase';
+
+// Components
 import { Panel } from 'react-bootstrap';
 
 class Tech extends Component {
-    state = {
-        tickets: []
+    constructor(props) {
+        super(props);
+        this.state = {
+            tickets: [],
+            firebaseUser: this.props.firebaseUser,
+            techUserID: null
+        };
     }
 
     componentDidMount() {
-        /* Fetch all tickets and check which tickets have
-            been assigned to this tech user
-         */
-        fetch(apiurl + '/api/ticket/list')
-            .then((response) => response.json())
-            .then((responseJson) => {
-                const myTickets = [];
-                for(const ele in responseJson) {
-                    firebase.database().ref('ticket/'+responseJson[ele].id).on('value', (snapshot) => {
-                        if(snapshot.val() !== null && snapshot.val().user_id === this.props.user.uid) {
-                            myTickets.push(responseJson[ele]);
+        // Retrieve techUserID .then() fetch it's tickets
+        this.getTechUserAndSetID().then(() => {
+            // Fetch all tickets assigned to this tech user
+            fetch(`${apiurl}/api/techUser/${this.state.techUserID}/tickets`)
+                .then(res => res.json())
+                .then(tickets => this.setState({ tickets }));
+        })
+    }
 
-                            /* Force the view to re-render (async problem) */
-                            this.forceUpdate();
-                        }
-                    })
-                }
-                return myTickets;
+    getTechUserAndSetID = () => {
+        const options = {
+            method: 'post',
+            body: JSON.stringify({
+                firebaseId: this.state.firebaseUser.uid,
+                firebaseName: this.state.firebaseUser.displayName
             })
-            .then((tickets) => {
-                this.setState({
-                    tickets: tickets
-                });
-            })
+        };
+
+        // Add to Database
+        return fetch(`${apiurl}/api/techUser/findOrCreate`, options)
+            .then(res => res.json())
+            .then(techUserID => this.setState({ techUserID }));
     }
 
     render () {
@@ -40,12 +44,11 @@ class Tech extends Component {
         return (
             <div>
                 <h1>My Tickets</h1>
-                {tickets.length < 1 ? (
-                        <div className="alert alert-info">You have not been assigned any tickets.</div>
-                    )
+                {tickets.length < 1
+                    ? <div className="alert alert-info">You have not been assigned any tickets.</div>
                     : tickets.map((ticket, i) => (
-                        <Panel key={i} header={ticket.title}>
-                            <p>{ticket.comment}</p>
+                        <Panel key={i} header={ticket.issue}>
+                            <p>{ticket.description}</p>
                         </Panel>
                     ))}
             </div>

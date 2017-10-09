@@ -14,8 +14,7 @@ import './App.css';
 class App extends Component {
     state = {
         type: null,
-        user: null,
-        techUserID: null
+        firebaseUser: null
     }
 
     componentWillMount () {
@@ -23,7 +22,7 @@ class App extends Component {
     }
 
     componentWillUnmount() {
-        if(this.state.user !== null) {
+        if(this.state.firebaseUser !== null) {
             localStorage.setItem('type', this.state.type);
         }
     }
@@ -37,7 +36,7 @@ class App extends Component {
 
     handleCredentials = (params) => {
         this.setState({
-            user: params,
+            firebaseUser: params,
             type: localStorage.getItem('type')
         });
     }
@@ -47,16 +46,12 @@ class App extends Component {
         this.setState({
             type: type
         });
-
-        if (type === 'tech') {
-            this.getTechUserAndSetID();
-        }
     }
 
     handleSignout = () => {
         const vm = this;
         vm.setState({
-            user: null,
+            firebaseUser: null,
             type: null
         });
         localStorage.setItem('type', null);
@@ -65,36 +60,22 @@ class App extends Component {
         });
     }
 
-    getTechUserAndSetID = () => {
-        const options = {
-            method: 'post',
-            body: JSON.stringify({
-                firebaseId: this.state.user.uid,
-                firebaseName: this.state.user.displayName
-            })
-        };
-
-        // Add to Database
-        fetch(`${apiurl}/api/techUser/findOrCreate`, options)
-            .then(res => res.json())
-            .then(techUserID => {
-                this.setState({techUserID});
-            });
-    }
-
     render() {
+        const { firebaseUser, type } = this.state;
         return (
             <div className="App">
-                <NavBarPanel user={this.state.user} handleSignout={this.handleSignout} />
+                <NavBarPanel user={firebaseUser} handleSignout={this.handleSignout} />
 
                 <div className="container">
                     <Route exact path="/" render={() =>
-                        this.state.user === null ? <Login handleClick={this.handleClick} />
-                                                 : <Redirect to="/dashboard" />
+                        !firebaseUser
+                            ? <Login handleClick={this.handleClick} />
+                            : <Redirect to="/dashboard" />
                     } />
                     <Route exact path="/dashboard" render={() =>
-                        this.state.user !== null ? <Dashboard user={this.state.user} type={this.state.type} />
-                                                 : <Redirect to="/" />
+                        firebaseUser
+                            ? <Dashboard firebaseUser={firebaseUser} type={type} />
+                            : <Redirect to="/" />
                     } />
                     <Footer />
                 </div>
