@@ -14,7 +14,8 @@ import './App.css';
 class App extends Component {
     state = {
         type: null,
-        user: null
+        user: null,
+        techUserID: null
     }
 
     componentWillMount () {
@@ -47,14 +48,9 @@ class App extends Component {
             type: type
         });
 
-        // FIXME Need to add the user to MySQL Database
-        const user = {};
-        user['user/' + this.state.user.uid] = {
-            type: type,
-            name: this.state.user.displayName,
-            id: this.state.user.uid
-        };
-        firebase.database().ref().update(user)
+        if (type === 'tech') {
+            this.getTechUserAndSetID();
+        }
     }
 
     handleSignout = () => {
@@ -67,6 +63,23 @@ class App extends Component {
         firebase.auth().signOut().then(function () {
             alert('You have been signed out');
         });
+    }
+
+    getTechUserAndSetID = () => {
+        const options = {
+            method: 'post',
+            body: JSON.stringify({
+                firebaseId: this.state.user.uid,
+                firebaseName: this.state.user.displayName
+            })
+        };
+
+        // Add to Database
+        fetch(`${apiurl}/api/techUser/findOrCreate`, options)
+            .then(res => res.json())
+            .then(techUserID => {
+                this.setState({techUserID});
+            });
     }
 
     render() {
