@@ -9,13 +9,11 @@ class Helpdesk extends Component {
     state = {
         tickets: [],
         selectedTicket: null,
-        techUsers: [],
-        selectedTech: null
+        techUsers: []
     }
 
-    /* Once component has mounted, fetch from API + firebase */
     componentDidMount() {
-        // Fetch all tickets and techUsers
+        // Fetch all tickets and tech users
         fetch(`${apiurl}/api/ticket/list`)
             .then(res => res.json())
             .then(tickets => this.setState({ tickets }));
@@ -25,43 +23,21 @@ class Helpdesk extends Component {
             .then(techUsers => this.setState({ techUsers }));
     }
 
-    /* Toggle the ticket dialog */
+    // Toggle the ticket dialog
     ticketDetailsClick = (ticket) => {
         const { selectedTicket } = this.state;
         this.setState({
-            selectedTicket: (selectedTicket !== null && selectedTicket.id === ticket.id ? null : ticket)
+            selectedTicket: selectedTicket && selectedTicket.id === ticket.id ? null : ticket
         });
     }
 
-    /* Close button for dialog */
+    // Close button for dialog
     closeDialogClick = () => {
-        this.setState({
-            selectedTicket: null
-        })
-    }
-
-    /* Update the selected tech from dropdown box */
-    handleTechChange = (e) => {
-        this.setState({
-            selectedTech: e.target.value
-        });
-    }
-
-    /* Click assign button */
-    assignTicketToTech = () => {
-        if(this.state.selectedTech === null) {
-            return;
-        }
-
-        /* Add assigned ticket+tech into database*/
-        // TODO: Implement
-        alert('TODO: Tech successfully assigned to ticket!');
-        window.location.reload();
+        this.setState({ selectedTicket: null });
     }
 
     render () {
-        const vm = this
-        const { selectedTicket, tickets, techUsers } = this.state
+        const { selectedTicket, tickets } = this.state
 
         return (
             <Row>
@@ -72,15 +48,15 @@ class Helpdesk extends Component {
                     )}
                     <Table striped hover>
                         <thead>
-                        <tr >
-                            <th>ID</th>
-                            <th>User</th>
-                            <th>OS</th>
-                            <th>Issue</th>
-                            <th>Description</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
+                            <tr >
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>OS</th>
+                                <th>Issue</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
                         </thead>
                         <tbody>
                         {tickets.map((ticket, i) => (
@@ -92,7 +68,7 @@ class Helpdesk extends Component {
                                 <td>{ticket.description}</td>
                                 <td>{ticket.status}</td>
                                 <td>
-                                    <Button bsStyle={vm.state.selectedTicket !== null && vm.state.selectedTicket.id === ticket.id ? 'success' : 'info'} onClick={() => vm.ticketDetailsClick(ticket)}>More Details</Button>
+                                    <Button bsStyle={selectedTicket !== null && selectedTicket.id === ticket.id ? 'success' : 'info'} onClick={() => this.ticketDetailsClick(ticket)}>More Details</Button>
                                 </td>
                             </tr>
                         ))}
@@ -100,10 +76,8 @@ class Helpdesk extends Component {
                     </Table>
                 </Col>
                 { selectedTicket !== null && <HelpdeskModal selectedTicket={selectedTicket}
-                                                            techUsers={techUsers}
-                                                            closeDialogClick={this.closeDialogClick}
-                                                            handleTechChange={this.handleTechChange}
-                                                            assignTicketToTech={this.assignTicketToTech} /> }
+                                                            techUsers={this.state.techUsers}
+                                                            closeDialogClick={this.closeDialogClick} /> }
             </Row>
         );
     }
