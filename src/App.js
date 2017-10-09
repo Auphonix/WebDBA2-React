@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
-import './App.css';
-import { Navbar, Button, Nav, NavItem, Jumbotron } from 'react-bootstrap';
-import firebase from 'firebase';
 import { Route, Redirect } from 'react-router';
+import firebase from 'firebase';
+import { apiurl } from './helpers/constants';
+
+// Components
+import NavBarPanel from './components/NavBarPanel';
+import Login from './components/Login';
 import Dashboard from './components/Dashboard';
-import logo from './logo.svg';
+import Footer from "./components/Footer";
+
+import './App.css';
 
 class App extends Component {
     state = {
@@ -30,7 +35,6 @@ class App extends Component {
     }
 
     handleCredentials = (params) => {
-        console.log(params);
         this.setState({
             user: params,
             type: localStorage.getItem('type')
@@ -68,52 +72,18 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                <Navbar inverse>
-                    <Navbar.Header>
-                        <Navbar.Brand>
-                            <a href="#">Ticket System</a>
-                        </Navbar.Brand>
-                    </Navbar.Header>
-                    <Nav pullRight>
-                        {this.state.user !== null &&
-                        <NavItem onClick={this.handleSignout}>Sign out</NavItem>
-                        }
-                    </Nav>
-                </Navbar>
+                <NavBarPanel user={this.state.user} handleSignout={this.handleSignout} />
 
                 <div className="container">
-                    <Route exact path="/" render={() => (
-                        this.state.user === null ? (
-                                <Jumbotron className="text-center">
-                                    <img src={logo} className="App-logo" alt="logo" style={{width:200}} />
-                                    <h1>Sign in to continue</h1>
-                                    <p>
-                                        Please select your account type:
-                                    </p>
-
-                                    <div className="text-center">
-                                        <Button bsSize="large" bsStyle="primary" style={{marginRight:10}} onClick={() => this.handleClick('helpdesk')}>Helpdesk User</Button>
-                                        <Button bsSize="large" bsStyle="success" onClick={() => this.handleClick('tech')}>Tech User</Button>
-                                    </div>
-                                </Jumbotron>
-                            )
-                            : (
-                                <Redirect to="/dashboard" />
-                            )
-                    )} />
-                    <Route exact path="/dashboard" render={() => (
-                        this.state.user !== null ? (
-                                <Dashboard user={this.state.user} type={this.state.type} />
-                            )
-                            : (
-                                <Redirect to="/" />
-                            )
-                    )} />
-                    <footer className="text-center">
-                        <p>
-                            Example demo written by Nicholas Zuccarelli
-                        </p>
-                    </footer>
+                    <Route exact path="/" render={() =>
+                        this.state.user === null ? <Login handleClick={this.handleClick} />
+                                                 : <Redirect to="/dashboard" />
+                    } />
+                    <Route exact path="/dashboard" render={() =>
+                        this.state.user !== null ? <Dashboard user={this.state.user} type={this.state.type} />
+                                                 : <Redirect to="/" />
+                    } />
+                    <Footer />
                 </div>
             </div>
         );
