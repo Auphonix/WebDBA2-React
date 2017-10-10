@@ -31,3 +31,11 @@
 th {
   text-align: center;
 }
+
+.comment-header{
+  text-align: -webkit-center;
+}
+
+.comment-content{
+  text-align: -webkit-center;
+}
