@@ -91,14 +91,14 @@ class TicketInstance extends Component {
                                 </div>
                             </Row>
                             </thead>
-                            <hr/>
+                            <br/><hr/>
                             {comments.map((comment, i) => (
                             <div className="comment-content">
                                 <Row>
                                 <Col lg={3}><td>{comment.techUserID}</td></Col>
                                 <Col lg={6}><td>{comment.content}</td></Col>
                                 <Col lg={3}><td>{comment.created_at}</td></Col>
-                                    <hr/>
+                                   <br/><hr/>
                                 </Row>
                             </div>
                             ))}
