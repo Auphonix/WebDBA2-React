@@ -22,8 +22,8 @@ class Tickets extends Component {
                     {tickets.length < 1
                         ? <div className="alert alert-info">You have not been assigned any tickets.</div>
                         : tickets.map((ticket, i) => (
-                            <Link to={"dashboard/tickets/" + ticket.id}>
-                                <Panel key={i} header={ticket.issue} onClick={() => this.props.onSelectTicket(ticket)}>
+                            <Link to={"dashboard/tickets/" + ticket.id} key={i}>
+                                <Panel header={ticket.issue} onClick={() => this.props.onSelectTicket(ticket)}>
                                     <p>{ticket.description}</p>
                                 </Panel>
                             </Link>
