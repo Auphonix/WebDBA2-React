@@ -1,15 +1,17 @@
-import React, { Component } from 'react';
-import { Route, Redirect } from 'react-router';
+import React, {Component} from 'react';
+import { Switch, Redirect, Route } from 'react-router-dom'
 import firebase from 'firebase';
-import { apiurl } from './helpers/constants';
+import {apiurl} from './helpers/constants';
 
 // Components
 import NavBarPanel from './components/NavBarPanel';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
+import Tickets from './components/tickets/Tickets';
 import Footer from "./components/Footer";
 
 import './App.css';
+import HelpdeskModal from "./components/dashboard/HelpdeskModal";
 
 class App extends Component {
     state = {
@@ -17,12 +19,12 @@ class App extends Component {
         firebaseUser: null
     }
 
-    componentWillMount () {
+    componentWillMount() {
         firebase.auth().onAuthStateChanged(this.handleCredentials);
     }
 
     componentWillUnmount() {
-        if(this.state.firebaseUser !== null) {
+        if (this.state.firebaseUser !== null) {
             localStorage.setItem('type', this.state.type);
         }
     }
@@ -30,8 +32,12 @@ class App extends Component {
     handleClick = (type) => {
         const provider = new firebase.auth.GoogleAuthProvider();
         firebase.auth().signInWithPopup(provider)
-            .then((success) => { this.handleCredentials(success.user) })
-            .then(() => { this.handleLogin(type) });
+            .then((success) => {
+                this.handleCredentials(success.user)
+            })
+            .then(() => {
+                this.handleLogin(type)
+            });
     }
 
     handleCredentials = (params) => {
@@ -61,23 +67,28 @@ class App extends Component {
     }
 
     render() {
-        const { firebaseUser, type } = this.state;
+        const {firebaseUser, type} = this.state;
         return (
             <div className="App">
-                <NavBarPanel user={firebaseUser} handleSignout={this.handleSignout} />
+                <NavBarPanel user={firebaseUser} handleSignout={this.handleSignout}/>
 
                 <div className="container">
-                    <Route exact path="/" render={() =>
-                        !firebaseUser
-                            ? <Login handleClick={this.handleClick} />
-                            : <Redirect to="/dashboard" />
-                    } />
-                    <Route exact path="/dashboard" render={() =>
-                        firebaseUser
-                            ? <Dashboard firebaseUser={firebaseUser} type={type} />
-                            : <Redirect to="/" />
-                    } />
-                    <Footer />
+                        <Switch>
+                            <Route exact path="/" render={() =>
+                                !firebaseUser
+                                    ? <Login handleClick={this.handleClick}/>
+                                    : <Redirect to="/dashboard"/>
+                            }/>
+                            <Route path="/ticket" render={(props) =>
+                                <Tickets firebaseUser={firebaseUser} type={type}/>}/>
+
+                            <Route path='/dashboard' render={() =>
+                                firebaseUser
+                                    ? <Dashboard firebaseUser={firebaseUser} type={type}/>
+                                    : <Redirect to="/"/>
+                            }/>
+                        </Switch>
+                    <Footer/>
                 </div>
             </div>
         );

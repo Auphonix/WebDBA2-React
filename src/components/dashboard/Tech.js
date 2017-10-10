@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { apiurl } from "../../helpers/constants";
-
-// Components
-import { Panel } from 'react-bootstrap';
+import React, {Component} from 'react';
+import {apiurl} from "../../helpers/constants";
+import {Switch, Redirect, Route} from 'react-router-dom';
+import Tickets from '../tickets/Tickets';
+import TicketInstance from '../tickets/TicketInstance';
 
 class Tech extends Component {
     constructor(props) {
@@ -10,7 +10,8 @@ class Tech extends Component {
         this.state = {
             tickets: [],
             firebaseUser: this.props.firebaseUser,
-            techUserID: null
+            techUserID: null,
+            selectedTicket: null
         };
     }
 
@@ -20,7 +21,7 @@ class Tech extends Component {
             // Fetch all tickets assigned to this tech user
             fetch(`${apiurl}/api/techUser/${this.state.techUserID}/tickets`)
                 .then(res => res.json())
-                .then(tickets => this.setState({ tickets }));
+                .then(tickets => this.setState({tickets}));
         })
     }
 
@@ -36,22 +37,26 @@ class Tech extends Component {
         // Add to Database
         return fetch(`${apiurl}/api/techUser/findOrCreate`, options)
             .then(res => res.json())
-            .then(techUserID => this.setState({ techUserID }));
+            .then(techUserID => this.setState({techUserID}));
     }
 
-    render () {
-        const { tickets } = this.state;
+    handleTicket = (ticket) => {
+        this.setState({selectedTicket: ticket});
+        <Redirect to="dashboard/tickets/' + ticket.id" />
+        // console.log("Ticket with id: " + ticket.id + "selected");
+    }
+
+    render() {
+        const {tickets, firebaseUser, selectedTicket} = this.state;
         return (
-            <div>
-                <h1>My Tickets</h1>
-                {tickets.length < 1
-                    ? <div className="alert alert-info">You have not been assigned any tickets.</div>
-                    : tickets.map((ticket, i) => (
-                        <Panel key={i} header={ticket.issue}>
-                            <p>{ticket.description}</p>
-                        </Panel>
-                    ))}
-            </div>
+            <Switch>
+                <Route exact path="/dashboard" render={(props) =>
+                    <Tickets firebaseUser={firebaseUser} tickets={tickets} onSelectTicket={this.handleTicket}/>}/>
+
+                <Route path="/dashboard/tickets/:number" render={(props) =>
+                    <TicketInstance firebaseUser={firebaseUser} ticket={selectedTicket}/>}/>
+            </Switch>
+
         );
     }
 }
