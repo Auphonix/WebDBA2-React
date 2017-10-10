@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { apiurl } from '../../helpers/constants';
 
 // Components
-import { Jumbotron, Button, Col } from 'react-bootstrap';
+import { Well, Button, Col } from 'react-bootstrap';
 
 class HelpdeskModal extends Component {
     constructor(props) {
@@ -57,22 +57,27 @@ class HelpdeskModal extends Component {
 
     render() {
         const { ticket, techUsers } = this.state
-
         return (
             <Col md={5}>
-                <Jumbotron style={{padding: 10}}>
+                <Well style={{padding: 10}}>
                     <Button block bsStyle="danger" onClick={this.state.closeDialogClick}>Close Dialog</Button>
-                    <h3 className="text-uppercase">Ticket Details</h3>
-                    <p><strong>ID: </strong>{ticket.id}</p>
-                    <p><strong>Issue: </strong><br/>
-                        {ticket.issue}</p>
-                    <p><strong>Description: </strong><br/>
-                        {ticket.description}</p>
+                    <h3><strong>ID: </strong>{ticket.id}</h3>
+                    <h3><strong>Issue: </strong><br/>
+                        {ticket.issue}</h3>
+                    <h4><strong>Description: </strong><br/>
+                        {ticket.description}</h4>
+                    <p><strong>Assigned Tech User: </strong>{ticket.tech_ticket_handler ? ticket.tech_ticket_handler.tech_user.firebaseName : 'None'}</p>
+                    <p><strong>User: </strong>{ticket.userID}</p>
+                    <p><strong>Operating System: </strong>{ticket.operatingSystem}</p>
+                    <p><strong>Status: </strong>{ticket.status}</p>
+                    <p><strong>Priority: </strong>{ticket.priority}</p>
+                    <p><strong>Escalation Level: </strong>{ticket.escalationLevel}</p>
+
                     {techUsers.length > 0 && (
                         <div>
                             <hr/>
                             <form onSubmit={this.assignTicketToTech}>
-                                <h3 className="text-uppercase">Assign to tech</h3>
+                                <p className="text-uppercase">Assign to tech</p>
                                 <select className="form-control" onChange={this.handleTechChange} defaultValue="-1">
                                     <option value="-1" defaultValue disabled>Select a tech user</option>
                                     {techUsers.map((user, i) => (
@@ -80,7 +85,7 @@ class HelpdeskModal extends Component {
                                     ))}
                                 </select>
 
-                                <h3 className="text-uppercase">Select priority</h3>
+                                <p className="text-uppercase">Select priority</p>
                                 <select className="form-control" onChange={this.handlePriorityChange} defaultValue="-1">
                                     <option value="-1" defaultValue disabled>Select a priority</option>
                                     <option value="low">Low</option>
@@ -88,7 +93,7 @@ class HelpdeskModal extends Component {
                                     <option value="high">High</option>
                                 </select>
 
-                                <h3 className="text-uppercase">Select escalation level</h3>
+                                <p className="text-uppercase">Select escalation level</p>
                                 <select className="form-control" onChange={this.handleEscalationChange} defaultValue="-1">
                                     <option value="-1" defaultValue disabled>Select an escalation level</option>
                                     <option value="1" >1</option>
@@ -102,7 +107,7 @@ class HelpdeskModal extends Component {
                             </form>
                         </div>
                     )}
-                </Jumbotron>
+                </Well>
             </Col>
         );
     }

@@ -38,7 +38,6 @@ class Helpdesk extends Component {
 
     render () {
         const { selectedTicket, tickets } = this.state
-
         return (
             <Row>
                 <Col md={(selectedTicket !== null ? 7 : 12)}>
@@ -50,11 +49,10 @@ class Helpdesk extends Component {
                         <thead>
                             <tr >
                                 <th>ID</th>
-                                <th>User</th>
-                                <th>OS</th>
                                 <th>Issue</th>
                                 <th>Description</th>
                                 <th>Status</th>
+                                <th>Assigned Tech User</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -62,11 +60,14 @@ class Helpdesk extends Component {
                         {tickets.map((ticket, i) => (
                             <tr key={i}>
                                 <td>{ticket.id}</td>
-                                <td>{ticket.userID}</td>
-                                <td>{ticket.operatingSystem}</td>
                                 <td>{ticket.issue}</td>
                                 <td>{ticket.description}</td>
                                 <td>{ticket.status}</td>
+                                <td>{
+                                    ticket.tech_ticket_handler
+                                        ? ticket.tech_ticket_handler.tech_user.firebaseName
+                                        : 'None'
+                                }</td>
                                 <td>
                                     <Button bsStyle={selectedTicket !== null && selectedTicket.id === ticket.id ? 'success' : 'info'} onClick={() => this.ticketDetailsClick(ticket)}>More Details</Button>
                                 </td>
