@@ -42,7 +42,7 @@ class Tech extends Component {
 
     handleTicket = (ticket) => {
         this.setState({selectedTicket: ticket});
-        <Redirect to="dashboard/tickets/' + ticket.id" />
+        {/*<Redirect to="dashboard/tickets/' + ticket.id" />*/}
         // console.log("Ticket with id: " + ticket.id + "selected");
     }
 
@@ -52,7 +52,6 @@ class Tech extends Component {
             <Switch>
                 <Route exact path="/dashboard" render={(props) =>
                     <Tickets firebaseUser={firebaseUser} tickets={tickets} onSelectTicket={this.handleTicket}/>}/>
-
                 <Route path="/dashboard/tickets/:number" render={(props) =>
                     <TicketInstance firebaseUser={firebaseUser} ticket={selectedTicket}/>}/>
             </Switch>

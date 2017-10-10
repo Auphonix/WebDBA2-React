@@ -5,7 +5,7 @@ class Footer extends Component {
         return (
             <footer className="text-center">
                 <p>
-                    Example demo written by Nicholas Zuccarelli
+                    RMIT ITS - ADMIN
                 </p>
             </footer>
         )
